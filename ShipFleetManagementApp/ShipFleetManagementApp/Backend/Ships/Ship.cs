@@ -7,6 +7,8 @@ namespace ShipFleetManagementApp.Backend.Ships
         private string? _iMONumber;
         private double _length;
         private double _width;
+        private double _maxLoad;
+        private double _currentLoad;
 
         public string? Name { get; set; }
         public Coordinates CurrentPosition { get; protected set; }
@@ -15,9 +17,10 @@ namespace ShipFleetManagementApp.Backend.Ships
         protected Ship()
         {
             PositionHistory = [];
+            _currentLoad = 0;
         }
 
-        protected Ship(string iMONumber, string name, double length, double width, double latitude, double longitude)
+        protected Ship(string iMONumber, string name, double length, double width, double latitude, double longitude, double maxLoad)
             : this()
         {
             IMONumber = iMONumber;
@@ -25,6 +28,7 @@ namespace ShipFleetManagementApp.Backend.Ships
             Length = length;
             Width = width;
             UpdatePosition(latitude, longitude);
+            MaxLoad = maxLoad;
         }
 
         public string IMONumber
@@ -74,6 +78,44 @@ namespace ShipFleetManagementApp.Backend.Ships
                 else
                 {
                     throw new ArgumentException("Width is incorrect. It should be a positive number.");
+                }
+            }
+        }
+
+        /// <summary>
+        /// Maximum permitted load in tons.
+        /// </summary>
+        public double MaxLoad
+        {
+            get { return _maxLoad; }
+            set
+            {
+                if (value >= 0)
+                {
+                    _maxLoad = value;
+                }
+                else
+                {
+                    throw new ArgumentException("MaxLoad is incorrect. It should be a non-negative number.");
+                }
+            }
+        }
+
+        /// <summary>
+        /// Current load in tons.
+        /// </summary>
+        public double CurrentLoad
+        {
+            get { return _currentLoad; }
+            protected set
+            {
+                if (value >= 0 && value <= MaxLoad)
+                {
+                    _currentLoad = value;
+                }
+                else
+                {
+                    throw new ArgumentException("CurrentLoad is incorrect. It should be less than MaxLoad and a non-negative number.");
                 }
             }
         }
