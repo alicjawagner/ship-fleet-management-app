@@ -115,7 +115,7 @@ namespace ShipFleetManagementApp.Backend.Ships
                 }
                 else
                 {
-                    throw new ArgumentException("CurrentLoad is incorrect. It should be less than MaxLoad and a non-negative number.");
+                    throw new ArgumentException("CurrentLoad is incorrect. It should be less or equal to MaxLoad and a non-negative number.");
                 }
             }
         }
