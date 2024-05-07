@@ -72,5 +72,10 @@ namespace ShipFleetManagementApp.Backend.Ships
                 Console.WriteLine($"Container {i}: {Containers[i]}");
             }
         }
+
+        public override string ToString()
+        {
+            return "Container " + base.ToString();
+        }
     }
 }
