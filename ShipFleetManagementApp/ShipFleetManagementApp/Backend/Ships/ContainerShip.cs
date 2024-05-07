@@ -1,9 +1,13 @@
-﻿namespace ShipFleetManagementApp.Backend.Ships
+﻿using ShipFleetManagementApp.Backend.Ships.Cargo;
+using ShipFleetManagementApp.Backend.Utils;
+
+namespace ShipFleetManagementApp.Backend.Ships
 {
     public class ContainerShip : Ship
     {
         private int _currentContainers = 0;
         public int MaxContainers { get; }
+        public List<Container> Containers { get; } = [];
 
         public ContainerShip(string iMONumber, string name, double length, double width, double latitude, double longitude, double maxLoad, int maxContainers)
             : base(iMONumber, name, length, width, latitude, longitude, maxLoad)
@@ -31,6 +35,24 @@
                 {
                     throw new ArgumentException("CurrentContainers is incorrect. It should be less or equal to MaxContainers and a non-negative number.");
                 }
+            }
+        }
+
+        public void LoadContainer(string sender, string addressee, string cargoDescription, double weight)
+        {
+            Containers.Add(new Container(sender, addressee, cargoDescription, weight));
+        }
+
+        public void UnloadContainer(int index)
+        {
+            Containers.RemoveAt(index);
+        }
+
+        public void PrintContainers()
+        {
+            for (int i = 0; i < Containers.Count; i++)
+            {
+                Console.WriteLine($"Container {i}: {Containers[i]}");
             }
         }
     }

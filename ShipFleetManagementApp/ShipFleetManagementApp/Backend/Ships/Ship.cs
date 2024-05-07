@@ -45,6 +45,9 @@ namespace ShipFleetManagementApp.Backend.Ships
             }
         }
 
+        /// <summary>
+        /// Length in meters.
+        /// </summary>
         public double Length
         {
             get { return _length; }
@@ -61,6 +64,9 @@ namespace ShipFleetManagementApp.Backend.Ships
             }
         }
 
+        /// <summary>
+        /// Width in meters.
+        /// </summary>
         public double Width
         {
             get { return _width; }

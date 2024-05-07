@@ -24,7 +24,7 @@
 
         public override string ToString()
         {
-            return $"Container - Sender: {Sender}, Addressee: {Addressee}, Cargo Description: {CargoDescription}, Weight: {Weight} tons";
+            return $"Sender: {Sender}, Addressee: {Addressee}, Cargo Description: {CargoDescription}, Weight: {Weight} tons";
         }
     }
 }

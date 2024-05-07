@@ -1,9 +1,8 @@
-﻿using Moq;
-using ShipFleetManagementApp.Backend.Ships;
-using ShipFleetManagementApp.Backend.Utils;
+﻿using ShipFleetManagementApp.Backend.Ships;
 
 namespace ShipFleetManagementAppTests.Backend.Ships
 {
+    [TestFixture]
     public class ShipTests
     {
         [TestCase("INVALID")]
