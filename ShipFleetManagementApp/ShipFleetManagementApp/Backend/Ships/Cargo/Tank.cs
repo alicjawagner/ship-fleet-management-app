@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ShipFleetManagementApp.Backend.Ships
+namespace ShipFleetManagementApp.Backend.Ships.Cargo
 {
     public class Tank
     {
