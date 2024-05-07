@@ -1,6 +1,6 @@
 ﻿namespace ShipFleetManagementApp.Backend.Utils
 {
-    public struct Coordinates
+    public readonly struct Coordinates
     {
         public Coordinates(double latitude, double longitude)
         {

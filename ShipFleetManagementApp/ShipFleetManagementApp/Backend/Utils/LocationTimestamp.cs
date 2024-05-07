@@ -1,14 +1,8 @@
 ﻿namespace ShipFleetManagementApp.Backend.Utils
 {
-    public struct LocationTimestamp
+    public readonly struct LocationTimestamp(Coordinates position)
     {
-        public LocationTimestamp(Coordinates position)
-        {
-            Position = position;
-            Time = DateTime.Now;
-        }
-
-        public Coordinates Position { get; }
-        public DateTime Time { get; }
+        public Coordinates Position { get; } = position;
+        public DateTime Time { get; } = DateTime.Now;
     }
 }
