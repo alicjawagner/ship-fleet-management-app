@@ -10,19 +10,14 @@ namespace ShipFleetManagementApp.Backend.Ships
         private double _maxLoad;
         private double _currentLoad;
 
-        public string? Name { get; set; }
+        public string Name { get; }
         public Coordinates CurrentPosition { get; protected set; }
         public List<LocationTimestamp> PositionHistory { get; }
 
-        protected Ship()
+        protected Ship(string iMONumber, string name, double length, double width, double latitude, double longitude, double maxLoad)
         {
             PositionHistory = [];
             _currentLoad = 0;
-        }
-
-        protected Ship(string iMONumber, string name, double length, double width, double latitude, double longitude, double maxLoad)
-            : this()
-        {
             IMONumber = iMONumber;
             Name = name;
             Length = length;
@@ -37,7 +32,7 @@ namespace ShipFleetManagementApp.Backend.Ships
             {
                 return _iMONumber ?? "unspecified";
             }
-            set
+            private set
             {
                 if (IsIMONumberCorrect(value))
                 {
@@ -53,7 +48,7 @@ namespace ShipFleetManagementApp.Backend.Ships
         public double Length
         {
             get { return _length; }
-            set
+            private set
             {
                 if (value > 0)
                 {
@@ -69,7 +64,7 @@ namespace ShipFleetManagementApp.Backend.Ships
         public double Width
         {
             get { return _width; }
-            set
+            private set
             {
                 if (value > 0)
                 {
@@ -88,7 +83,7 @@ namespace ShipFleetManagementApp.Backend.Ships
         public double MaxLoad
         {
             get { return _maxLoad; }
-            set
+            private set
             {
                 if (value >= 0)
                 {
@@ -122,6 +117,11 @@ namespace ShipFleetManagementApp.Backend.Ships
 
         public static bool IsIMONumberCorrect(string iMONumber)
         {
+            if (string.IsNullOrEmpty(iMONumber))
+            {
+                return false;
+            }
+
             iMONumber = iMONumber.Trim();
             if (!iMONumber.StartsWith("IMO "))
             {
