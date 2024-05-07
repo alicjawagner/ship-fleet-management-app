@@ -40,12 +40,29 @@ namespace ShipFleetManagementApp.Backend.Ships
 
         public void LoadContainer(string sender, string addressee, string cargoDescription, double weight)
         {
-            Containers.Add(new Container(sender, addressee, cargoDescription, weight));
+            if (CurrentContainers < MaxContainers)
+            {
+                if (CurrentLoad + weight <= MaxLoad)
+                {
+                    Containers.Add(new Container(sender, addressee, cargoDescription, weight));
+                    CurrentContainers++;
+                }
+                else
+                {
+                    throw new InvalidOperationException("Loading container unsuccessful. The weight of the containers exceeds the maximum permitted weight.");
+                }
+            }
+            else
+            {
+                throw new InvalidOperationException("Loading container unsuccessful. The maximum number of containers has already been loaded.");
+            }
+
         }
 
         public void UnloadContainer(int index)
         {
             Containers.RemoveAt(index);
+            CurrentContainers--;
         }
 
         public void PrintContainers()
