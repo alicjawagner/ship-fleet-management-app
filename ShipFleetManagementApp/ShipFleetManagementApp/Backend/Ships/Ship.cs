@@ -161,5 +161,10 @@ namespace ShipFleetManagementApp.Backend.Ships
             CurrentPosition = position;
             PositionHistory.Add(new LocationTimestamp(position));
         }
+
+        public override string ToString()
+        {
+            return $"Ship {IMONumber}, Name: {Name}, Current position: {CurrentPosition}";
+        }
     }    
 }

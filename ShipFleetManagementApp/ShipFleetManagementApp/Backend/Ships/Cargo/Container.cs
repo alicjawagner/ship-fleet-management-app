@@ -2,10 +2,10 @@
 {
     public readonly struct Container
     {
-        public Container(string sender, string adressee, string cargoDescription, double weight)
+        public Container(string sender, string addressee, string cargoDescription, double weight)
         {
             Sender = sender;
-            Adressee = adressee;
+            Addressee = addressee;
             CargoDescription = cargoDescription;
             if (weight >= 0)
             {
@@ -18,8 +18,13 @@
         }
 
         public string Sender { get; }
-        public string Adressee { get; }
+        public string Addressee { get; }
         public string CargoDescription { get; }
         public double Weight { get; }
+
+        public override string ToString()
+        {
+            return $"Container - Sender: {Sender}, Addressee: {Addressee}, Cargo Description: {CargoDescription}, Weight: {Weight} tons";
+        }
     }
 }

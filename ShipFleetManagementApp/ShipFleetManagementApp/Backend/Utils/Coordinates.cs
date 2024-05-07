@@ -26,6 +26,6 @@
         public double Latitude { get; }
         public double Longitude { get; }
 
-        public override string ToString() => $"Coordinates: ({Latitude}, {Longitude})";
+        public override string ToString() => $"({Latitude}, {Longitude})";
     }
 }
