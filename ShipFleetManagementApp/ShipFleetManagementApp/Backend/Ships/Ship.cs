@@ -7,19 +7,24 @@ namespace ShipFleetManagementApp.Backend.Ships
         private string? _iMONumber;
         private double _length;
         private double _width;
-        private Coordinates _currentPosition;
 
-        public string Name { get; set; }
+        public string? Name { get; set; }
+        public Coordinates CurrentPosition { get; protected set; }
         public List<LocationTimestamp> PositionHistory { get; }
 
-        protected Ship(string iMONumber, string name, double length, double width, Coordinates currentPosition)
+        protected Ship()
+        {
+            PositionHistory = [];
+        }
+
+        protected Ship(string iMONumber, string name, double length, double width, double latitude, double longitude)
+            : this()
         {
             IMONumber = iMONumber;
             Name = name;
             Length = length;
             Width = width;
-            CurrentPosition = currentPosition;
-            PositionHistory = [];
+            UpdatePosition(latitude, longitude);
         }
 
         public string IMONumber
@@ -73,16 +78,6 @@ namespace ShipFleetManagementApp.Backend.Ships
             }
         }
 
-        public Coordinates CurrentPosition
-        {
-            get { return _currentPosition; }
-            set
-            {
-                _currentPosition = value;
-                PositionHistory.Add(new LocationTimestamp(value));
-            }
-        }
-
         public static bool IsIMONumberCorrect(string iMONumber)
         {
             iMONumber = iMONumber.Trim();
@@ -92,6 +87,11 @@ namespace ShipFleetManagementApp.Backend.Ships
             }
 
             string numbersPart = iMONumber[4..];
+            if (numbersPart.Length != 7)
+            {
+                return false;
+            }
+
             int sum = 0;
 
             for (int i = 0, factor = 7; i < numbersPart.Length - 1; i++, factor--)
@@ -115,7 +115,9 @@ namespace ShipFleetManagementApp.Backend.Ships
 
         public void UpdatePosition(double latitude, double longitude)
         {
-            CurrentPosition = new Coordinates(latitude, longitude);
+            Coordinates position = new Coordinates(latitude, longitude);
+            CurrentPosition = position;
+            PositionHistory.Add(new LocationTimestamp(position));
         }
     }    
 }
