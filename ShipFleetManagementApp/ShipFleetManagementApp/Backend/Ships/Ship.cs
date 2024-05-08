@@ -23,7 +23,7 @@ namespace ShipFleetManagementApp.Backend.Ships
         }
 
         /// <summary>
-        /// Name of sthe ship.
+        /// Name of the ship.
         /// </summary>
         public string Name { get; }
 
@@ -192,9 +192,21 @@ namespace ShipFleetManagementApp.Backend.Ships
             PositionHistory.Add(new LocationTimestamp(position));
         }
 
+        /// <summary>
+        /// Prints the whole position history.
+        /// </summary>
+        public void PrintPositionHistory()
+        {
+            foreach (LocationTimestamp timestamp in PositionHistory)
+            {
+                Console.WriteLine(timestamp.ToString());
+            }
+        }
+
         public override string ToString()
         {
-            return $"Ship {IMONumber}, Name: {Name}, Current position: {CurrentPosition}";
+            return $"Ship {IMONumber}, Name: {Name}, Current position: {CurrentPosition}, Current load: {CurrentLoad}, "
+                + $"Max load: {MaxLoad}, Length: {Length}, Width: {Width}";
         }
     }    
 }

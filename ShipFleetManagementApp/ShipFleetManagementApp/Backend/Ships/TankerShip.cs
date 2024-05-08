@@ -20,5 +20,16 @@ namespace ShipFleetManagementApp.Backend.Ships
         {
             return "Tanker " + base.ToString();
         }
+
+        /// <summary>
+        /// Prints all the tanks installed on the ship.
+        /// </summary>
+        public void PrintContainers()
+        {
+            for (int i = 0; i < Tanks.Length; i++)
+            {
+                Console.WriteLine($"Tank {i}: {Tanks[i]}");
+            }
+        }
     }
 }

@@ -43,6 +43,11 @@
         /// Density in kg/liter.
         /// </summary>
         public double Density { get; }
+
+        public override string ToString()
+        {
+            return $"{Type}, density {Density} kg/liter.";
+        }
     }
 
 }

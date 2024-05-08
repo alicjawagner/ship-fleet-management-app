@@ -76,6 +76,10 @@
             {
                 throw new InvalidOperationException("Refueling tank unsuccessful. The tank is not installed on any ship.");
             }
+            if (CurrentVolume != 0)
+            {
+                throw new InvalidOperationException("Refueling tank unsuccessful. The tank has already been refueled.");
+            }
 
             FuelType = fuelType;
             CurrentVolume = liters;
@@ -107,6 +111,12 @@
             FuelType = null;
             CurrentVolume = 0;
             _currentWeight = 0;
+        }
+
+        public override string ToString()
+        {
+            string state = (CurrentVolume != 0) ? $"refueled ({FuelType!.Type} - {CurrentVolume} liters)" : "empty";
+            return $"Max capacity: {MaxCapacity} liters, state: {state}";
         }
 
         /// <summary>
