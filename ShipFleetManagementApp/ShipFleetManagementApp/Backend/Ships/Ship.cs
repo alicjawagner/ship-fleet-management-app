@@ -108,7 +108,7 @@ namespace ShipFleetManagementApp.Backend.Ships
         public double CurrentLoad
         {
             get { return _currentLoad; }
-            protected set
+            set
             {
                 if (value >= 0 && value <= MaxLoad)
                 {

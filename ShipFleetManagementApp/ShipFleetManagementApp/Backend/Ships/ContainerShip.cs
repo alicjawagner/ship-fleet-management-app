@@ -40,29 +40,41 @@ namespace ShipFleetManagementApp.Backend.Ships
 
         public void LoadContainer(string sender, string addressee, string cargoDescription, double weight)
         {
-            if (CurrentContainers < MaxContainers)
+            Containers.Add(new Container(sender, addressee, cargoDescription, weight));
+            try
             {
-                if (CurrentLoad + weight <= MaxLoad)
+                CurrentContainers++;
+                try
                 {
-                    Containers.Add(new Container(sender, addressee, cargoDescription, weight));
-                    CurrentContainers++;
+                    CurrentLoad += weight;
                 }
-                else
+                catch (ArgumentException)
                 {
-                    throw new InvalidOperationException("Loading container unsuccessful. The weight of the containers exceeds the maximum permitted weight.");
+                    CurrentContainers--;
+                    Containers.RemoveAt(Containers.Count - 1);
+                    throw new InvalidOperationException("Loading container unsuccessful. The total weight exceeds the permitted load.");
                 }
             }
-            else
+            catch (ArgumentException)
             {
+                Containers.RemoveAt(Containers.Count - 1);
                 throw new InvalidOperationException("Loading container unsuccessful. The maximum number of containers has already been loaded.");
             }
-
         }
 
         public void UnloadContainer(int index)
         {
-            Containers.RemoveAt(index);
-            CurrentContainers--;
+            try
+            {
+                double weight = Containers[index].Weight;
+                Containers.RemoveAt(index);
+                CurrentContainers--;
+                CurrentLoad -= weight;
+            }
+            catch (ArgumentOutOfRangeException)
+            {
+                throw new InvalidOperationException("Unloading container unsuccessful. There is no container with this number.");
+            }
         }
 
         public void PrintContainers()

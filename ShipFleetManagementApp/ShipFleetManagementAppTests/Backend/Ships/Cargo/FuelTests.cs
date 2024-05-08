@@ -1,5 +1,4 @@
 ﻿using ShipFleetManagementApp.Backend.Ships.Cargo;
-using System.Numerics;
 
 namespace ShipFleetManagementAppTests.Backend.Ships.Cargo
 {
@@ -11,8 +10,11 @@ namespace ShipFleetManagementAppTests.Backend.Ships.Cargo
         {
             Fuel diesel = Fuel.Diesel;
 
-            Assert.That(diesel.Type, Is.EqualTo("Diesel"));
-            Assert.That(diesel.Density, Is.EqualTo(0.85));
+            Assert.Multiple(() =>
+            {
+                Assert.That(diesel.Type, Is.EqualTo("Diesel"));
+                Assert.That(diesel.Density, Is.EqualTo(0.85));
+            });
         }
 
         [Test]
@@ -20,8 +22,11 @@ namespace ShipFleetManagementAppTests.Backend.Ships.Cargo
         {
             Fuel heavyFuel = Fuel.HeavyFuel;
 
-            Assert.That(heavyFuel.Type, Is.EqualTo("Heavy Fuel"));
-            Assert.That(heavyFuel.Density, Is.EqualTo(0.95));
+            Assert.Multiple(() =>
+            {
+                Assert.That(heavyFuel.Type, Is.EqualTo("Heavy Fuel"));
+                Assert.That(heavyFuel.Density, Is.EqualTo(0.95));
+            });
         }
     }
 }

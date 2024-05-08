@@ -10,6 +10,10 @@ namespace ShipFleetManagementApp.Backend.Ships
             : base(iMONumber, name, length, width, latitude, longitude, maxLoad)
         {
             Tanks = tanks;
+            foreach (var tank in tanks)
+            {
+                tank.Ship = this;
+            }
         }
 
         public override string ToString()
