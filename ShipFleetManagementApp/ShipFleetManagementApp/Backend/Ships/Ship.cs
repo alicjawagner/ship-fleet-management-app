@@ -10,10 +10,6 @@ namespace ShipFleetManagementApp.Backend.Ships
         private double _maxLoad;
         private double _currentLoad;
 
-        public string Name { get; }
-        public Coordinates CurrentPosition { get; protected set; }
-        public List<LocationTimestamp> PositionHistory { get; }
-
         protected Ship(string iMONumber, string name, double length, double width, double latitude, double longitude, double maxLoad)
         {
             PositionHistory = [];
@@ -26,6 +22,24 @@ namespace ShipFleetManagementApp.Backend.Ships
             MaxLoad = maxLoad;
         }
 
+        /// <summary>
+        /// Name of sthe ship.
+        /// </summary>
+        public string Name { get; }
+
+        /// <summary>
+        /// Current position of the ship (latitude, longitude).
+        /// </summary>
+        public Coordinates CurrentPosition { get; private set; }
+
+        /// <summary>
+        /// History of the ship's position with update time.
+        /// </summary>
+        public List<LocationTimestamp> PositionHistory { get; }
+
+        /// <summary>
+        /// IMO Number of the ship.
+        /// </summary>
         public string IMONumber
         {
             get
@@ -121,6 +135,11 @@ namespace ShipFleetManagementApp.Backend.Ships
             }
         }
 
+        /// <summary>
+        /// Checks if the IMO Number is correct (check digit, format).
+        /// </summary>
+        /// <param name="iMONumber"></param>
+        /// <returns></returns>
         public static bool IsIMONumberCorrect(string iMONumber)
         {
             if (string.IsNullOrEmpty(iMONumber))
@@ -161,6 +180,11 @@ namespace ShipFleetManagementApp.Backend.Ships
             return sum % 10 == lastDigit;
         }
 
+        /// <summary>
+        /// Updates the ship's position and adds an entry to the position history.
+        /// </summary>
+        /// <param name="latitude"></param>
+        /// <param name="longitude"></param>
         public void UpdatePosition(double latitude, double longitude)
         {
             Coordinates position = new Coordinates(latitude, longitude);

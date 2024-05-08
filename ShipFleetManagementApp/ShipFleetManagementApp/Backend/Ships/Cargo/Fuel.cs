@@ -11,12 +11,6 @@
             Density = density;
         }
 
-        public string Type { get; }
-        /// <summary>
-        /// Density in kg/liter.
-        /// </summary>
-        public double Density { get; }
-
         public static Fuel Diesel
         {
             get
@@ -40,6 +34,15 @@
                 return _heavyFuel;
             }
         }
+        
+        /// <summary>
+        /// Name of fuel: Diesel or Heavy Fuel
+        /// </summary>
+        public string Type { get; }
+        /// <summary>
+        /// Density in kg/liter.
+        /// </summary>
+        public double Density { get; }
     }
 
 }

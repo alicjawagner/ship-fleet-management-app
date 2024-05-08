@@ -26,13 +26,6 @@
         public double Latitude { get; }
         public double Longitude { get; }
 
-        public override bool Equals(object? obj)
-        {
-            return obj is Coordinates coordinates &&
-                   Latitude == coordinates.Latitude &&
-                   Longitude == coordinates.Longitude;
-        }
-
         public override string ToString() => $"({Latitude}, {Longitude})";
     }
 }

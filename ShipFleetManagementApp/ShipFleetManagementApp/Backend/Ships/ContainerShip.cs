@@ -1,13 +1,10 @@
 ﻿using ShipFleetManagementApp.Backend.Ships.Cargo;
-using ShipFleetManagementApp.Backend.Utils;
 
 namespace ShipFleetManagementApp.Backend.Ships
 {
     public class ContainerShip : Ship
     {
         private int _currentContainers = 0;
-        public int MaxContainers { get; }
-        public List<Container> Containers { get; } = [];
 
         public ContainerShip(string iMONumber, string name, double length, double width, double latitude, double longitude, double maxLoad, int maxContainers)
             : base(iMONumber, name, length, width, latitude, longitude, maxLoad)
@@ -22,10 +19,23 @@ namespace ShipFleetManagementApp.Backend.Ships
             }
         }
 
+        /// <summary>
+        /// Maximum permitted number of containers to be loaded onto the ship.
+        /// </summary>
+        public int MaxContainers { get; }
+
+        /// <summary>
+        /// List of containers loaded onto the ship.
+        /// </summary>
+        public List<Container> Containers { get; } = [];
+
+        /// <summary>
+        /// Current number of containers loaded onto the ship.
+        /// </summary>
         public int CurrentContainers
         {
             get { return _currentContainers; }
-            protected set
+            private set
             {
                 if (value >= 0 && value <= MaxContainers)
                 {
@@ -38,6 +48,14 @@ namespace ShipFleetManagementApp.Backend.Ships
             }
         }
 
+        /// <summary>
+        /// Loads the container onto the ship.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="addressee"></param>
+        /// <param name="cargoDescription"></param>
+        /// <param name="weight"></param>
+        /// <exception cref="InvalidOperationException"></exception>
         public void LoadContainer(string sender, string addressee, string cargoDescription, double weight)
         {
             Containers.Add(new Container(sender, addressee, cargoDescription, weight));
@@ -62,6 +80,11 @@ namespace ShipFleetManagementApp.Backend.Ships
             }
         }
 
+        /// <summary>
+        /// Unloads the container at the given index on the list Containers from the ship.
+        /// </summary>
+        /// <param name="index"></param>
+        /// <exception cref="InvalidOperationException"></exception>
         public void UnloadContainer(int index)
         {
             try
@@ -77,6 +100,9 @@ namespace ShipFleetManagementApp.Backend.Ships
             }
         }
 
+        /// <summary>
+        /// Prints all the containers loaded onto the ship.
+        /// </summary>
         public void PrintContainers()
         {
             for (int i = 0; i < Containers.Count; i++)

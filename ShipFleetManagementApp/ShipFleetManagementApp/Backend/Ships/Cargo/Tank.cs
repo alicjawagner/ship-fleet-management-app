@@ -9,15 +9,22 @@
         private double _currentVolume;
         private double _maxCapacity;
 
-        public TankerShip? Ship { get; set; }
-        public Fuel? FuelType { get; set; }
-
         public Tank(double maxCapacity)
         {
             MaxCapacity = maxCapacity;
             _currentVolume = 0;
             _currentWeight = 0;
         }
+
+        /// <summary>
+        /// Ship which the tank is loaded onto.
+        /// </summary>
+        public TankerShip? Ship { get; set; }
+
+        /// <summary>
+        /// Type of fuel currently refueled.
+        /// </summary>
+        public Fuel? FuelType { get; set; }
 
         /// <summary>
         /// Maximum permitted capacity in liters.
@@ -55,20 +62,6 @@
                     throw new ArgumentException("CurrentVolume is incorrect. It should be less or equal to MaxLoad and a non-negative number.");
                 }
             }
-        }
-
-        /// <summary>
-        /// Calculates the weight of the currently refueled fuel in tons.
-        /// </summary>
-        /// <returns></returns>
-        /// <exception cref="InvalidOperationException"></exception>
-        private double CalculateWeight()
-        {
-            if (FuelType == null)
-            {
-                throw new InvalidOperationException("Calculating weight for a tank unsuccessful. First, choose the type of fuel.");
-            }
-            return (CurrentVolume * FuelType.Density) / 1000;
         }
 
         /// <summary>
@@ -114,6 +107,20 @@
             FuelType = null;
             CurrentVolume = 0;
             _currentWeight = 0;
+        }
+
+        /// <summary>
+        /// Calculates the weight of the currently refueled fuel in tons.
+        /// </summary>
+        /// <returns></returns>
+        /// <exception cref="InvalidOperationException"></exception>
+        private double CalculateWeight()
+        {
+            if (FuelType == null)
+            {
+                throw new InvalidOperationException("Calculating weight for a tank unsuccessful. First, choose the type of fuel.");
+            }
+            return (CurrentVolume * FuelType.Density) / 1000;
         }
     }
 }
