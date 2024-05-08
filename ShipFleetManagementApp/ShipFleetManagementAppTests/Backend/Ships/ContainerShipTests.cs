@@ -1,4 +1,5 @@
-﻿using ShipFleetManagementApp.Backend.Ships;
+﻿using Microsoft.VisualStudio.CodeCoverage;
+using ShipFleetManagementApp.Backend.Ships;
 using ShipFleetManagementApp.Backend.Utils;
 
 namespace ShipFleetManagementAppTests.Backend.Ships
@@ -6,6 +7,14 @@ namespace ShipFleetManagementAppTests.Backend.Ships
     [TestFixture]
     public class ContainerShipTests
     {
+        private ContainerShip _ship;
+
+        [SetUp]
+        public void Init()
+        {
+            _ship = new ContainerShip("IMO 9074729", "Black Pearl", 366, 49, 40.7128, -74.0060, 300000, 20000);
+        }
+
         [Test]
         public void Constructor_ValidValues_CreatesObject()
         {
@@ -43,6 +52,97 @@ namespace ShipFleetManagementAppTests.Backend.Ships
         public void Constructor_InvalidValues_ThrowsException(string iMONumber, string name, double length, double width, double latitude, double longitude, double maxLoad, int maxContainers)
         {
             Assert.Throws<ArgumentException>(() => new ContainerShip(iMONumber, name, length, width, latitude, longitude, maxLoad, maxContainers));
+        }
+
+        [Test]
+        public void LoadContainer_ValidContainer_AddsContainerAndUpdatesCurrentContainersAndCurrentLoad()
+        {
+            double initialLoad = _ship.CurrentLoad;
+
+            _ship.LoadContainer("Sender", "Addressee", "Cargo", 100);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(_ship.CurrentLoad, Is.EqualTo(initialLoad + 100));
+                Assert.That(_ship.CurrentContainers, Is.EqualTo(1));
+            });
+        }
+
+        [Test]
+        public void LoadContainer_InvalidWegihtOfContainer_ThrowsExceptionAndDoesNotAddContainer()
+        {
+            double initialLoad = _ship.CurrentLoad;
+
+            // negative weight
+            Assert.Throws<ArgumentException>(() => _ship.LoadContainer("Sender", "Addressee", "Cargo", -1));
+            Assert.Multiple(() =>
+            {
+                Assert.That(_ship.CurrentLoad, Is.EqualTo(initialLoad));
+                Assert.That(_ship.CurrentContainers, Is.EqualTo(0));
+                Assert.That(_ship.Containers, Is.Empty);
+            });
+        }
+
+        [Test]
+        public void LoadContainer_ExceededPermittedLoad_ThrowsExceptionAndDoesNotAddContainer()
+        {
+            double initialLoad = _ship.CurrentLoad;
+
+            Assert.Throws<InvalidOperationException>(() => _ship.LoadContainer("Sender", "Addressee", "Cargo", _ship.MaxLoad + 1));
+            Assert.Multiple(() =>
+            {
+                Assert.That(_ship.CurrentLoad, Is.EqualTo(initialLoad));
+                Assert.That(_ship.CurrentContainers, Is.EqualTo(0));
+                Assert.That(_ship.Containers, Is.Empty);
+            });
+        }
+
+        [Test]
+        public void LoadContainer_ExceededPermittedNumberOfContainers_ThrowsExceptionAndDoesNotAddContainer()
+        {
+            _ship = new ContainerShip("IMO 9074729", "Black Pearl", 366, 49, 40.7128, -74.0060, 300000, 0);
+            double initialLoad = _ship.CurrentLoad;
+
+            Assert.Throws<InvalidOperationException>(() => _ship.LoadContainer("Sender", "Addressee", "Cargo", 100));
+            Assert.Multiple(() =>
+            {
+                Assert.That(_ship.CurrentLoad, Is.EqualTo(initialLoad));
+                Assert.That(_ship.CurrentContainers, Is.EqualTo(0));
+                Assert.That(_ship.Containers, Is.Empty);
+            });
+        }
+
+        [Test]
+        public void UnloadContainer_ValidIndex_RemovesContainerAndUpdatesCurrentContainersAndCurrentLoad()
+        {
+            _ship.LoadContainer("Sender", "Addressee", "Cargo", 100);
+            double initialLoad = _ship.CurrentLoad;
+            int initialContainersCount = _ship.CurrentContainers;
+
+            _ship.UnloadContainer(0);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(_ship.CurrentLoad, Is.EqualTo(initialLoad - 100));
+                Assert.That(_ship.CurrentContainers, Is.EqualTo(initialContainersCount - 1));
+                Assert.That(_ship.Containers, Is.Empty);
+            });
+        }
+        
+        [Test]
+        public void UnloadContainer_InvalidIndex_ThrowsExceptionAndDoesNotModifyCurrentContainersAndCurrentLoad()
+        {
+            _ship.LoadContainer("Sender", "Addressee", "Cargo", 100);
+            double initialLoad = _ship.CurrentLoad;
+            int initialContainersCount = _ship.CurrentContainers;
+
+            Assert.Throws<InvalidOperationException>(() => _ship.UnloadContainer(1));
+            Assert.Multiple(() =>
+            {
+                Assert.That(_ship.CurrentLoad, Is.EqualTo(initialLoad));
+                Assert.That(_ship.CurrentContainers, Is.EqualTo(initialContainersCount));
+                Assert.That(_ship.Containers, Has.Count.EqualTo(1));
+            });
         }
     }
 }
