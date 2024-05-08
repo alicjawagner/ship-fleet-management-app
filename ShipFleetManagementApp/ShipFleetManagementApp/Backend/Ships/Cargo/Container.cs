@@ -13,13 +13,16 @@
             }
             else
             {
-                throw new ArgumentException("Weight is incorrect. It should be a non-negative number.");
+                throw new ArgumentException("Container weight is incorrect. It should be a non-negative number.");
             }
         }
 
         public string Sender { get; }
         public string Addressee { get; }
         public string CargoDescription { get; }
+        /// <summary>
+        /// Weight in tons.
+        /// </summary>
         public double Weight { get; }
 
         public override string ToString()
