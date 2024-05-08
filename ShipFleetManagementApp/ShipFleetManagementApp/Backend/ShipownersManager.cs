@@ -22,10 +22,26 @@
         /// </summary>
         public void PrintShipowners()
         {
+            if (Shipowners.Count == 0) {
+                Console.WriteLine("There are no shipowners yet.");
+                return;
+            }
+
+            Console.WriteLine("Shipowners:");
             for (int i = 0; i < Shipowners.Count; i++)
             {
                 Console.WriteLine($"{i}: {Shipowners[i]}");
             }
+        }
+
+        /// <summary>
+        /// Checks if the shipowner exists.
+        /// </summary>
+        /// <param name="index"></param>
+        /// <returns></returns>
+        public bool IsShipownerIndexValid(int index)
+        {
+            return index >= 0 && index < Shipowners.Count;
         }
     }
 }
