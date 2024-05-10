@@ -4,32 +4,54 @@ namespace ShipFleetManagementApp.Backend.Ships
 {
     public class TankerShip : Ship
     {
-        public TankerShip(string iMONumber, string name, double length, double width, double latitude, double longitude, double maxLoad, Tank[] tanks)
+        private Tank[]? _tanks = null;
+
+        public TankerShip(string iMONumber, string name, double length, double width, double latitude, double longitude, double maxLoad)
             : base(iMONumber, name, length, width, latitude, longitude, maxLoad)
         {
-            Tanks = tanks;
-            foreach (var tank in tanks)
-            {
-                tank.Ship = this;
-            }
         }
 
-        public Tank[] Tanks { get; }
-
-        public override string ToString()
-        {
-            return "Tanker " + base.ToString();
+        /// <summary>
+        /// The list of the tanks installed on the ship.
+        /// </summary>
+        public Tank[] Tanks {
+            get
+            {
+                return _tanks ?? [];
+            }
+            set
+            {
+                if (_tanks == null)
+                {
+                    _tanks = value;
+                    foreach (Tank tank in value)
+                    {
+                        tank.Ship = this;
+                    }
+                }
+            }
         }
 
         /// <summary>
         /// Prints all the tanks installed on the ship.
         /// </summary>
-        public void PrintContainers()
+        public void PrintTanks()
         {
+            if (Tanks.Length == 0)
+            {
+                Console.WriteLine("There are no tanks installed on this ship.");
+                return;
+            }
+
             for (int i = 0; i < Tanks.Length; i++)
             {
                 Console.WriteLine($"Tank {i}: {Tanks[i]}");
             }
+        }
+
+        public override string ToString()
+        {
+            return "Tanker " + base.ToString();
         }
     }
 }

@@ -105,6 +105,12 @@ namespace ShipFleetManagementApp.Backend.Ships
         /// </summary>
         public void PrintContainers()
         {
+            if (Containers.Count == 0)
+            {
+                Console.WriteLine("There are no containers on this ship yet.");
+                return;
+            }
+
             for (int i = 0; i < Containers.Count; i++)
             {
                 Console.WriteLine($"Container {i}: {Containers[i]}");

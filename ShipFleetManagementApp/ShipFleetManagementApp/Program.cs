@@ -15,9 +15,9 @@ namespace ShipFleetManagementApp
             {
                 try
                 {
-                    CMH.ShowShipownersSelectionMenu();
+                    CMH.ShowInitialSelectionMenu();
                     choice = CMH.ReadNumericChoice();
-                    CMH.ReactToShipownersChoice(choice);
+                    CMH.ReactToInitialMenuChoice(choice);
                 }
                 catch (ProgramTerminationException)
                 {
