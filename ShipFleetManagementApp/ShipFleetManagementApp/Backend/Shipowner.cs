@@ -67,6 +67,7 @@ namespace ShipFleetManagementApp.Backend
                 return;
             }
 
+            Console.WriteLine($"{Name}'s ships:");
             for (int i = 0; i < Ships.Count; i++)
             {
                 Console.WriteLine($"{i}: {Ships[i]}");

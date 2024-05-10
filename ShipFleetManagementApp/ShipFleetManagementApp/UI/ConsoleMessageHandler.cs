@@ -1,6 +1,5 @@
 ﻿using ShipFleetManagementApp.Backend;
 using ShipFleetManagementApp.Backend.Utils;
-using System.Runtime.CompilerServices;
 
 namespace ShipFleetManagementApp.UI
 {
@@ -10,11 +9,11 @@ namespace ShipFleetManagementApp.UI
         private static Shipowner? _currentShipowner = null;
         
         /// <summary>
-        /// Reads user's choice and casts it to int.
+        /// Reads user's input and casts it to int.
         /// </summary>
         /// <returns>The chosen number (int).</returns>
         /// <exception cref="ProgramTerminationException"></exception>
-        public static int ReadNumericChoice()
+        public static int ReadIntInput()
         {
             string? input = Console.ReadLine();
             int choice = -1;
@@ -29,16 +28,40 @@ namespace ShipFleetManagementApp.UI
                 }
                 else
                 {
-                    Console.WriteLine("Invalid input. Please enter a number and press enter.");
+                    Console.WriteLine("Invalid input. Please enter a number (integer) and press enter.");
                     input = Console.ReadLine();
                 }
             }
 
-            Console.WriteLine($"Your choice: {choice}");
-
             if (choice == -1)
             {
                 throw new ProgramTerminationException();
+            }
+            return choice;
+        }
+
+        /// <summary>
+        /// Reads user's input and casts it to double.
+        /// </summary>
+        /// <returns>The chosen number (double).</returns>
+        private static double ReadDoubleInput()
+        {
+            string? input = Console.ReadLine();
+            double choice = -1;
+            bool success = false;
+
+            while (!success)
+            {
+                if (double.TryParse(input, out double result))
+                {
+                    choice = result;
+                    success = true;
+                }
+                else
+                {
+                    Console.WriteLine("Invalid input. Please enter a number (e.g. 20.5) and press enter.");
+                    input = Console.ReadLine();
+                }
             }
             return choice;
         }
@@ -114,7 +137,7 @@ namespace ShipFleetManagementApp.UI
                     int shipownerIndex = ChooseShipowner();
                     if (shipownerIndex == -1) { break; }
                     ShowShipownersMenu();
-                    int choice = ReadNumericChoice();
+                    int choice = ReadIntInput();
                     ReactToShipownersMenuChoice(choice);
                     break;
 
@@ -161,7 +184,7 @@ namespace ShipFleetManagementApp.UI
                 if (input != 0) // user doesn't go back, they stay in the menu
                 {
                     ShowShipownersMenu();
-                    input = ReadNumericChoice();
+                    input = ReadIntInput();
                 }
             }
         }
@@ -178,15 +201,15 @@ namespace ShipFleetManagementApp.UI
                 return -1;
             }
 
-            Console.WriteLine("Choosing a shipowner.\nEnter the shipowner's number:");
+            Console.WriteLine("\nChoosing a shipowner.\nEnter the shipowner's number:");
             _shipownersManager.PrintShipowners();
-            int choice = ReadNumericChoice();
+            int choice = ReadIntInput();
 
             while (!_shipownersManager.IsShipownerIndexValid(choice))
             {
                 Console.WriteLine("There's no such shipowner.\nEnter the shipowner's number:");
                 _shipownersManager.PrintShipowners();
-                choice = ReadNumericChoice();
+                choice = ReadIntInput();
             }
 
             _currentShipowner = _shipownersManager.Shipowners[choice];
@@ -198,7 +221,7 @@ namespace ShipFleetManagementApp.UI
         /// </summary>
         private static void AddShipowner()
         {
-            Console.WriteLine("Adding a new shipowner.\nEnter the shipowner's name:");
+            Console.WriteLine("\nAdding a new shipowner.\nEnter the shipowner's name:");
 
             string? name = Console.ReadLine();
             while (name == null) {
@@ -214,7 +237,7 @@ namespace ShipFleetManagementApp.UI
         /// </summary>
         private static void ShowShipAddingMenu()
         {
-            Console.WriteLine("Adding a new ship to the shipowner's list.\n" +
+            Console.WriteLine("\nAdding a new ship to the shipowner's list.\n" +
                 "Choose the type of the ship:\n" +
                 "0. Go back.\n" +
                 "1. Container ship.\n" +
@@ -228,7 +251,7 @@ namespace ShipFleetManagementApp.UI
         private static void AddShip()
         {
             ShowShipAddingMenu();
-            int choice = ReadNumericChoice();
+            int choice = ReadIntInput();
             bool stop = false;
 
             while (!stop)
@@ -240,9 +263,10 @@ namespace ShipFleetManagementApp.UI
                         break;
                     case 1: // add container ship
                         AddContainerShip();
+                        choice = 0;
                         break;
                     case 2: // add tanker ship
-                        //AddTankerShip();
+                        AddTankerShip();
                         break;
                     default:
                         Console.WriteLine("Invalid input. Please enter a valid option.");
@@ -252,17 +276,108 @@ namespace ShipFleetManagementApp.UI
                 if (choice != 0) // user doesn't go back, they stay in the menu
                 {
                     ShowShipAddingMenu();
-                    choice = ReadNumericChoice();
+                    choice = ReadIntInput();
                 }
             }
         }
 
+        /// <summary>
+        /// Performs adding a container ship to the shipowner's ship list.
+        /// </summary>
         private static void AddContainerShip()
         {
-            //TODO
-            // string iMONumber, string name, double length, double width, double latitude, double longitude, double maxLoad, int maxContainers
+            string iMONumber, name;
+            double length, width, latitude, longitude, maxLoad;
+            int maxContainers;
+            bool success = false;
 
-            //_currentShipowner.AddContainerShip()
+            Console.WriteLine("\nYou've chosen to add a new container ship. Please provide the information below.");
+            Console.Write("IMO Number (format: IMO 1234567): ");
+            iMONumber = Console.ReadLine() ?? "unspecified";
+            Console.Write("Name: ");
+            name = Console.ReadLine() ?? "unspecified";
+            Console.Write("Length in meters: ");
+            length = ReadDoubleInput();
+            Console.Write("Width in meters: ");
+            width = ReadDoubleInput();
+            Console.Write("Position - latitude: ");
+            latitude = ReadDoubleInput();
+            Console.Write("Position - longitude: ");
+            longitude = ReadDoubleInput();
+            Console.Write("Maximum permitted load in tons: ");
+            maxLoad = ReadDoubleInput();
+            Console.Write("Maximum permitted number of containers: ");
+            maxContainers = ReadIntInput();
+
+            while (!success)
+            {
+                try
+                {
+                    Console.WriteLine("\nAdding the ship...");
+                    _currentShipowner!.AddContainerShip(iMONumber, name, length, width, latitude, longitude, maxLoad, maxContainers);
+                    success = true;
+                    Console.WriteLine("The ship has been added successfully.");
+                }
+                catch (ArgumentException e)
+                {
+                    Console.WriteLine(e.Message);
+                    ShowShipValuesChangeMenu();
+                    Console.WriteLine("8. Maximum number of containers");
+                    int input = ReadIntInput();
+                    Console.Write("New value: ");
+                    switch (input)
+                    {
+                        case 1:
+                            iMONumber = Console.ReadLine() ?? "unspecified";
+                            break;
+                        case 2:
+                            name = Console.ReadLine() ?? "unspecified";
+                            break;
+                        case 3:
+                            length = ReadDoubleInput();
+                            break;
+                        case 4:
+                            width = ReadDoubleInput();
+                            break;
+                        case 5:
+                            latitude = ReadDoubleInput();
+                            break;
+                        case 6:
+                            longitude = ReadDoubleInput();
+                            break;
+                        case 7:
+                            maxLoad = ReadDoubleInput();
+                            break;
+                        case 8:
+                            maxContainers = ReadIntInput();
+                            break;
+                        default:
+                            Console.WriteLine("Invalid number. Try again.");
+                            break;
+                    }
+                }
+            }
+        }
+
+        private static void AddTankerShip()
+        {
+            //TODO
+        }
+
+        /// <summary>
+        /// Shows the menu for choosing the value to be changed.
+        /// </summary>
+        private static void ShowShipValuesChangeMenu()
+        {
+            Console.WriteLine("Please choose the number of the value you'd like to change.");
+            Console.WriteLine(
+                "1. IMO Number\n" +
+                "2. Name\n" +
+                "3. Length\n" +
+                "4. Width\n" +
+                "5. Latitude\n" +
+                "6. Longitude\n" +
+                "7. Maximum load");
         }
 
         /// <summary>
@@ -270,7 +385,7 @@ namespace ShipFleetManagementApp.UI
         /// </summary>
         public static void ShowExitMessage()
         {
-            Console.WriteLine("You are now exiting the application. Thank you for using it, and see you soon!");
+            Console.WriteLine("\nYou are now exiting the application. Thank you for using it, and see you soon!");
         }
     }
 }

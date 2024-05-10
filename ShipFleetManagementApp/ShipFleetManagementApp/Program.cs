@@ -16,7 +16,7 @@ namespace ShipFleetManagementApp
                 try
                 {
                     CMH.ShowInitialSelectionMenu();
-                    choice = CMH.ReadNumericChoice();
+                    choice = CMH.ReadIntInput();
                     CMH.ReactToInitialMenuChoice(choice);
                 }
                 catch (ProgramTerminationException)
