@@ -8,7 +8,7 @@ namespace ShipFleetManagementAppTests.Backend.Ships.Cargo
     {
         private TankerShip _ship;
         /// <summary>
-        /// With max capacity 1000, installed on _ship.
+        /// With max capacity 100000, installed on _ship.
         /// </summary>
         private Tank _tank;
 
@@ -17,7 +17,8 @@ namespace ShipFleetManagementAppTests.Backend.Ships.Cargo
         {
             _tank = new Tank(100000);
             Tank[] tanksList = [_tank];
-            _ship = new TankerShip("IMO 9074729", "Black Pearl", 366, 49, 40.7128, -74.0060, 80, tanksList);
+            _ship = new TankerShip("IMO 9074729", "Black Pearl", 366, 49, 40.7128, -74.0060, 80);
+            _ship.Tanks = tanksList;
         }
 
         [Test]
