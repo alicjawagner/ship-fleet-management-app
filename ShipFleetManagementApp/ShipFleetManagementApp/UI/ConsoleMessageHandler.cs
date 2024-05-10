@@ -1,5 +1,6 @@
 ﻿using ShipFleetManagementApp.Backend;
 using ShipFleetManagementApp.Backend.Utils;
+using System.Globalization;
 
 namespace ShipFleetManagementApp.UI
 {
@@ -46,13 +47,13 @@ namespace ShipFleetManagementApp.UI
         /// <returns>The chosen number (double).</returns>
         private static double ReadDoubleInput()
         {
-            string? input = Console.ReadLine();
+            string input = Console.ReadLine() ?? "";
             double choice = -1;
             bool success = false;
 
             while (!success)
             {
-                if (double.TryParse(input, out double result))
+                if (double.TryParse(input, NumberStyles.Any, CultureInfo.InvariantCulture, out double result))
                 {
                     choice = result;
                     success = true;
@@ -60,7 +61,7 @@ namespace ShipFleetManagementApp.UI
                 else
                 {
                     Console.WriteLine("Invalid input. Please enter a number (e.g. 20.5) and press enter.");
-                    input = Console.ReadLine();
+                    input = Console.ReadLine() ?? "";
                 }
             }
             return choice;
@@ -267,6 +268,7 @@ namespace ShipFleetManagementApp.UI
                         break;
                     case 2: // add tanker ship
                         AddTankerShip();
+                        choice = 0;
                         break;
                     default:
                         Console.WriteLine("Invalid input. Please enter a valid option.");
@@ -359,9 +361,76 @@ namespace ShipFleetManagementApp.UI
             }
         }
 
+        /// <summary>
+        /// Performs adding a tanker ship to the shipowner's ship list.
+        /// </summary>
         private static void AddTankerShip()
         {
-            //TODO
+            string iMONumber, name;
+            double length, width, latitude, longitude, maxLoad;
+            bool success = false;
+
+            Console.WriteLine("\nYou've chosen to add a new tanker ship. Please provide the information below.");
+            Console.Write("IMO Number (format: IMO 1234567): ");
+            iMONumber = Console.ReadLine() ?? "unspecified";
+            Console.Write("Name: ");
+            name = Console.ReadLine() ?? "unspecified";
+            Console.Write("Length in meters: ");
+            length = ReadDoubleInput();
+            Console.Write("Width in meters: ");
+            width = ReadDoubleInput();
+            Console.Write("Position - latitude: ");
+            latitude = ReadDoubleInput();
+            Console.Write("Position - longitude: ");
+            longitude = ReadDoubleInput();
+            Console.Write("Maximum permitted load in tons: ");
+            maxLoad = ReadDoubleInput();
+
+            while (!success)
+            {
+                try
+                {
+                    Console.WriteLine("\nAdding the ship...");
+                    _currentShipowner!.AddTankerShip(iMONumber, name, length, width, latitude, longitude, maxLoad);
+                    success = true;
+                    Console.WriteLine("The ship has been added successfully.");
+                }
+                catch (ArgumentException e)
+                {
+                    Console.WriteLine(e.Message);
+                    ShowShipValuesChangeMenu();
+                    int input = ReadIntInput();
+                    Console.Write("New value: ");
+                    switch (input)
+                    {
+                        case 1:
+                            iMONumber = Console.ReadLine() ?? "unspecified";
+                            break;
+                        case 2:
+                            name = Console.ReadLine() ?? "unspecified";
+                            break;
+                        case 3:
+                            length = ReadDoubleInput();
+                            break;
+                        case 4:
+                            width = ReadDoubleInput();
+                            break;
+                        case 5:
+                            latitude = ReadDoubleInput();
+                            break;
+                        case 6:
+                            longitude = ReadDoubleInput();
+                            break;
+                        case 7:
+                            maxLoad = ReadDoubleInput();
+                            break;
+                        default:
+                            Console.WriteLine("Invalid number. Try again.");
+                            break;
+                    }
+                }
+            }
+            //TODO add tanks
         }
 
         /// <summary>
