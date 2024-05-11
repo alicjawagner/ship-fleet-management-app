@@ -1,5 +1,4 @@
-﻿using Microsoft.VisualStudio.CodeCoverage;
-using ShipFleetManagementApp.Backend.Ships;
+﻿using ShipFleetManagementApp.Backend.Ships;
 using ShipFleetManagementApp.Backend.Utils;
 
 namespace ShipFleetManagementAppTests.Backend.Ships
