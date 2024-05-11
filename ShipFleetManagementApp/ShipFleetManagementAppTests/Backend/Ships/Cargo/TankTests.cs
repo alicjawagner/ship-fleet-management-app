@@ -49,5 +49,11 @@ namespace ShipFleetManagementAppTests.Backend.Ships.Cargo
                 Assert.That(_tank.CurrentVolume, Is.EqualTo(0));
             });
         }
+
+        [TearDown]
+        public void TearDown()
+        {
+            Ship.IMONumbersUsed.Clear();
+        }
     }
 }

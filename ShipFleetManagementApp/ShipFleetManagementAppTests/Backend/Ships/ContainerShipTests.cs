@@ -17,7 +17,7 @@ namespace ShipFleetManagementAppTests.Backend.Ships
         [Test]
         public void Constructor_ValidValues_CreatesObject()
         {
-            string iMONumber = "IMO 9074729";
+            string iMONumber = "IMO 1234567";
             string name = "Black Pearl";
             double length = 366;
             double width = 49;
@@ -51,6 +51,12 @@ namespace ShipFleetManagementAppTests.Backend.Ships
         public void Constructor_InvalidValues_ThrowsException(string iMONumber, string name, double length, double width, double latitude, double longitude, double maxLoad, int maxContainers)
         {
             Assert.Throws<ArgumentException>(() => new ContainerShip(iMONumber, name, length, width, latitude, longitude, maxLoad, maxContainers));
+        }
+
+        [Test]
+        public void Constructor_NotUniqueIMONumber_ThrowsArgumentException()
+        {
+            Assert.Throws<ArgumentException>(() => new ContainerShip("IMO 9074729", "Black Pearl2", 367, 56, 40.7128, -74.0060, 300000, 20000));
         }
 
         [Test]
@@ -99,7 +105,7 @@ namespace ShipFleetManagementAppTests.Backend.Ships
         [Test]
         public void LoadContainer_ExceededPermittedNumberOfContainers_ThrowsExceptionAndDoesNotAddContainer()
         {
-            _ship = new ContainerShip("IMO 9074729", "Black Pearl", 366, 49, 40.7128, -74.0060, 300000, 0);
+            _ship = new ContainerShip("IMO 1234567", "Black Pearl", 366, 49, 40.7128, -74.0060, 300000, 0);
             double initialLoad = _ship.CurrentLoad;
 
             Assert.Throws<InvalidOperationException>(() => _ship.LoadContainer("Sender", "Addressee", "Cargo", 100));
@@ -142,6 +148,12 @@ namespace ShipFleetManagementAppTests.Backend.Ships
                 Assert.That(_ship.CurrentContainers, Is.EqualTo(initialContainersCount));
                 Assert.That(_ship.Containers, Has.Count.EqualTo(1));
             });
+        }
+
+        [TearDown]
+        public void TearDown()
+        {
+            Ship.IMONumbersUsed.Clear();
         }
     }
 }

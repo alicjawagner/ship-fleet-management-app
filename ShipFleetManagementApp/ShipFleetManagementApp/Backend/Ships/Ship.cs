@@ -23,6 +23,11 @@ namespace ShipFleetManagementApp.Backend.Ships
         }
 
         /// <summary>
+        /// The list of IMO numbers that have already been used. Needed for uniqueness checking.
+        /// </summary>
+        public static List<string> IMONumbersUsed { get; set; } = new List<string>();
+
+        /// <summary>
         /// Name of the ship.
         /// </summary>
         public string Name { get; }
@@ -50,7 +55,15 @@ namespace ShipFleetManagementApp.Backend.Ships
             {
                 if (IsIMONumberCorrect(value))
                 {
-                    _iMONumber = value.Trim();
+                    if (!IMONumbersUsed.Contains(value))
+                    {
+                        _iMONumber = value.Trim();
+                        IMONumbersUsed.Add(_iMONumber);
+                    }
+                    else
+                    {
+                        throw new ArgumentException($"IMO number {value} has already been used. IMO number should be a unique value.");
+                    }
                 }
                 else
                 {

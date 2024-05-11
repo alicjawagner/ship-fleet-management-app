@@ -26,7 +26,5 @@ namespace ShipFleetManagementAppTests.Backend.Ships
 
             Assert.That(result, Is.True);
         }
-
-        
     }
 }
