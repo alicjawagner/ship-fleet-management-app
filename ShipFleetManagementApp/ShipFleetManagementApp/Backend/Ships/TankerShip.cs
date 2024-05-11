@@ -50,6 +50,16 @@ namespace ShipFleetManagementApp.Backend.Ships
             }
         }
 
+        /// <summary>
+        /// Checks if the tank exists.
+        /// </summary>
+        /// <param name="index"></param>
+        /// <returns>true if the tank exists, false if not</returns>
+        public bool IsTankIndexValid(int index)
+        {
+            return index >= 0 && index < Tanks.Count;
+        }
+
         public override string ToString()
         {
             return "Tanker " + base.ToString();

@@ -14,6 +14,7 @@ namespace ShipFleetManagementApp.UI
         private static ContainerShip? _currentContainerShip = null;
         private static TankerShip? _currentTankerShip = null;
         private static bool _isContainerShip = false; // true - container, false - tanker
+        private static Tank? _currentTank = null;
         
         /// <summary>
         /// Reads user's input and casts it to int.
@@ -141,6 +142,8 @@ namespace ShipFleetManagementApp.UI
         /// </summary>
         private static void ShowShipsMenu()
         {
+            _currentTank = null;
+
             ShowMenuHeading();
             Console.WriteLine($"You've chosen the ship: {_currentShip}");
             Console.WriteLine(
@@ -160,6 +163,20 @@ namespace ShipFleetManagementApp.UI
                     "3. Choose a tank.\n" +
                     "4. Show tanks installed on this ship.");
             }
+            ShowExitOption();
+        }
+
+        /// <summary>
+        /// Shows the menu allowing to refuel/empty the tank.
+        /// </summary>
+        private static void ShowTanksMenu()
+        {
+            ShowMenuHeading();
+            Console.WriteLine($"You've chosen the tank: {_currentTank}");
+            Console.WriteLine(
+                "0. Go back.\n" +
+                "1. Refuel the tank.\n" +
+                "2. Empty the tank.");
             ShowExitOption();
         }
 
@@ -234,6 +251,10 @@ namespace ShipFleetManagementApp.UI
             }
         }
 
+        /// <summary>
+        /// Performs a given task: updating ship's position, printing position history, actions with containers/tanks.
+        /// </summary>
+        /// <param name="input"></param>
         private static void ReactToShipsMenuChoice(int input)
         {
             bool stop = false;
@@ -258,7 +279,13 @@ namespace ShipFleetManagementApp.UI
                         if (_isContainerShip)
                             LoadContainer();
                         else
-                            ChooseTank();
+                        {
+                            int choice = ChooseTank();
+                            if (choice == -1) break;
+                            ShowTanksMenu();
+                            choice = ReadIntInput();
+                            ReactToTanksMenuChoice(choice);
+                        } 
                         break;
 
                     case 4: // unload container / show tanks
@@ -283,6 +310,40 @@ namespace ShipFleetManagementApp.UI
                 if (input != 0) // user doesn't go back, they stay in the menu
                 {
                     ShowShipsMenu();
+                    input = ReadIntInput();
+                }
+            }
+        }
+
+        private static void ReactToTanksMenuChoice(int input)
+        {
+            bool stop = false;
+
+            while (!stop)
+            {
+                switch (input)
+                {
+                    case 0: // go back
+                        stop = true;
+                        break;
+                    case 1: // refuel tank
+                        RefuelTank();
+                        input = 0;
+                        stop = true;
+                        break;
+                    case 2: // empty tank
+                        EmptyTank();
+                        input = 0;
+                        stop = true;
+                        break;
+                    default:
+                        Console.WriteLine("Invalid input. Please enter a valid option.");
+                        break;
+                }
+
+                if (input != 0) // user doesn't go back, they stay in the menu
+                {
+                    ShowTanksMenu();
                     input = ReadIntInput();
                 }
             }
@@ -618,7 +679,7 @@ namespace ShipFleetManagementApp.UI
             Tank? tank = null;
             bool success = false;
 
-            Console.WriteLine("You are adding one tank. Please provide the following information.");
+            Console.WriteLine("\nYou are adding one tank. Please provide the following information.");
             Console.Write("Maximum capacity in liters: ");
             maxCapacity = ReadDoubleInput();
 
@@ -653,8 +714,8 @@ namespace ShipFleetManagementApp.UI
             List<Tank> tanks = [];
             bool success = false;
 
-            Console.WriteLine("You are adding several tanks with the same parameters. Please provide the following information.");
-            Console.Write("Maximum capacity in liters for a tank: ");
+            Console.WriteLine("\nYou are adding several tanks with the same parameters. Please provide the following information.");
+            Console.Write("Maximum tank capacity in liters: ");
             maxCapacity = ReadDoubleInput();
             Console.Write("How many tanks do you want to add: ");
             tanksNumber = ReadIntInput();
@@ -736,7 +797,7 @@ namespace ShipFleetManagementApp.UI
             double weight;
             bool success = false;
 
-            Console.WriteLine("You are loading a container. Please provide the following information.");
+            Console.WriteLine("\nYou are loading a container. Please provide the following information.");
             Console.Write("Sender: ");
             sender = Console.ReadLine() ?? "unspecified";
             Console.Write("Addressee: ");
@@ -764,7 +825,6 @@ namespace ShipFleetManagementApp.UI
                 catch (InvalidOperationException e)
                 {
                     Console.WriteLine(e.Message);
-                    Console.WriteLine("Loading the container unsuccessful.");
                     success = true;
                 }
             }
@@ -775,10 +835,16 @@ namespace ShipFleetManagementApp.UI
         /// </summary>
         private static void UnloadContainer()
         {
-            Console.WriteLine("You are unloading a container. Please select the container you'd like to unload. Enter the container's number and press enter.");
-            _currentContainerShip!.PrintContainers();
+            if (_currentContainerShip!.Containers.Count == 0)
+            {
+                Console.WriteLine("There are no containers to unload.");
+                return;
+            }
+
+            Console.WriteLine("\nYou are unloading a container. Please select the container you'd like to unload. Enter the container's number and press enter.");
+            _currentContainerShip.PrintContainers();
             int input = ReadIntInput();
-            Console.WriteLine("Unloading the conatiner...");
+            Console.WriteLine("\nUnloading the container...");
 
             try
             {
@@ -788,13 +854,81 @@ namespace ShipFleetManagementApp.UI
             catch (InvalidOperationException e)
             {
                 Console.WriteLine(e.Message);
-                Console.WriteLine("Unloading the container unsuccessful.");
             }
         }
 
-        private static void ChooseTank()
+        /// <summary>
+        /// Performs the process of choosing a tank.
+        /// </summary>
+        /// <returns>The index of the chosen tank or -1 if no tank chosen.</returns>
+        private static int ChooseTank()
         {
-            // TODO
+            Console.WriteLine("\nChoosing a tank.\nEnter the tank's number:");
+            _currentTankerShip!.PrintTanks();
+            int choice = ReadIntInput();
+
+            if (!_currentTankerShip.IsTankIndexValid(choice))
+            {
+                Console.WriteLine("There's no such tank.");
+                return -1;
+            }
+
+            _currentTank = _currentTankerShip.Tanks[choice];
+            return choice;
+        }
+
+        /// <summary>
+        /// Performs the process of refueling the tank.
+        /// </summary>
+        private static void RefuelTank()
+        {
+            Fuel fuelType;
+            int fuelChoice;
+            double liters;
+
+            Console.WriteLine("\nYou are refueling the tank. Please provide the following information.");
+
+            Console.WriteLine("Fuel type:\n" +
+                "1. Diesel\n" +
+                "2. Heavy fuel");
+            fuelChoice = ReadIntInput();
+            while (fuelChoice != 1 && fuelChoice != 2)
+            {
+                Console.WriteLine("Incorrect number. Try again.");
+                fuelChoice = ReadIntInput();
+            }
+            fuelType = fuelChoice == 1 ? Fuel.Diesel : Fuel.HeavyFuel;
+
+            Console.Write("How many liters you want to refuel: ");
+            liters = ReadDoubleInput();
+
+            try
+            {
+                Console.WriteLine("\nRefueling the tank...");
+                _currentTank!.RefuelTank(fuelType, liters);
+                Console.WriteLine("The tank has been refueled successfully.");
+            }
+            catch (InvalidOperationException e)
+            {
+                Console.WriteLine(e.Message);
+            }
+        }
+
+        /// <summary>
+        /// Performs the process of emptying the tank.
+        /// </summary>
+        private static void EmptyTank()
+        {
+            Console.WriteLine("Emptying the tank...");
+            try
+            {
+                _currentTank!.EmptyTank();
+                Console.WriteLine("The tank has been emptied successfully.");
+            }
+            catch (InvalidOperationException e)
+            {
+                Console.WriteLine(e.Message);
+            }
         }
 
         /// <summary>
