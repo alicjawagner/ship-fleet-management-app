@@ -5,6 +5,7 @@ using ShipFleetManagementApp.Backend.Utils;
 using System.Data;
 using System.Globalization;
 using System.Numerics;
+using System.Threading.Tasks;
 using System.Xml.Linq;
 
 namespace ShipFleetManagementApp.UI
@@ -13,6 +14,8 @@ namespace ShipFleetManagementApp.UI
     {
         private static readonly ShipownersManager _shipownersManager = new ShipownersManager();
         private static Shipowner? _currentShipowner = null;
+        private static Ship? _currentShip = null;
+        private static bool _isContainerShip = false; // true - container, false - tanker
         
         /// <summary>
         /// Reads user's input and casts it to int.
@@ -117,6 +120,9 @@ namespace ShipFleetManagementApp.UI
         /// </summary>
         private static void ShowShipownersMenu()
         {
+            _currentShip = null;
+            _isContainerShip = false;
+
             ShowMenuHeading();
             Console.WriteLine($"You've chosen the shipowner: {_currentShipowner}");
             Console.WriteLine(
@@ -124,6 +130,37 @@ namespace ShipFleetManagementApp.UI
                 "1. Add a ship to the shipowner's list.\n" +
                 "2. Choose a ship from the shipowner's list.\n" +
                 "3. Show the shipowner's ships.");
+            ShowExitOption();
+        }
+
+        /// <summary>
+        /// Shows the menu allowing to update position / show position history of the ship
+        /// and do tasks specific for the type of the ship:
+        /// <para>container ship - show containers, load/unload container</para>
+        /// <para>tanker ship - show tanks, refuel/empty tank</para>
+        /// </summary>
+        private static void ShowShipsMenu()
+        {
+            ShowMenuHeading();
+            Console.WriteLine($"You've chosen the ship: {_currentShip}");
+            Console.WriteLine(
+                "0. Go back.\n" +
+                "1. Update the position of the ship.\n" +
+                "2. Show the position history of the ship.");
+            if ( _isContainerShip )
+            {
+                Console.WriteLine(
+                    "3. Load a container.\n" +
+                    "4. Unload a container.\n" +
+                    "5. Show containers loaded onto this ship.");
+            }
+            else
+            {
+                Console.WriteLine(
+                    "3. Refuel a tank.\n" +
+                    "4. Empty a tank.\n" +
+                    "5. Show tanks installed on this ship.");
+            }
             ShowExitOption();
         }
 
@@ -176,8 +213,11 @@ namespace ShipFleetManagementApp.UI
                         AddShip();
                         break;
                     case 2: // choose ship
-                        // TODO
-                        //----------------------------------------------------------------------------------------------------------------------------
+                        int shipIndex = ChooseShip();
+                        if (shipIndex == -1) { break; }
+                        ShowShipsMenu();
+                        int choice = ReadIntInput();
+                        ReactToShipsMenuChoice(choice);
                         break;
                     case 3: // print ships
                         _currentShipowner!.PrintShips();
@@ -193,6 +233,74 @@ namespace ShipFleetManagementApp.UI
                     input = ReadIntInput();
                 }
             }
+        }
+
+        private static void ReactToShipsMenuChoice(int input)
+        {
+            // TODO finish switch
+            bool stop = false;
+
+            while (!stop)
+            {
+                switch (input)
+                {
+                    case 0: //go back
+                        stop = true;
+                        break;
+                    case 1: // position update
+                        UpdateShipPosition();
+                        break;
+                    case 2: // show position history
+                        
+                        break;
+                    case 3: // load container / refuel tank
+                        
+                        break;
+                    case 4: // unload container / empty tank
+
+                        break;
+                    case 5: // show containers / show tanks
+
+                        break;
+                    default:
+                        Console.WriteLine("Invalid input. Please enter a valid option.");
+                        break;
+                }
+
+                if (input != 0) // user doesn't go back, they stay in the menu
+                {
+                    ShowShipsMenu();
+                    input = ReadIntInput();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Performs choosing a ship from the list.
+        /// </summary>
+        /// <returns>The index of the chosen ship or -1 if no ship chosen.</returns>
+        private static int ChooseShip()
+        {
+            if (_currentShipowner!.Ships.Count == 0)
+            {
+                Console.WriteLine("There are no ships to choose from yet. First add a ship.");
+                return -1;
+            }
+
+            Console.WriteLine("\nChoosing a ship.\nEnter the ship's number:");
+            _currentShipowner.PrintShips();
+            int choice = ReadIntInput();
+
+            while (!_currentShipowner.IsShipIndexValid(choice))
+            {
+                Console.WriteLine("There's no such ship.\nEnter the ship's number:");
+                _currentShipowner.PrintShips();
+                choice = ReadIntInput();
+            }
+
+            _currentShip = _currentShipowner.Ships[choice];
+            _isContainerShip = _currentShip is ContainerShip;
+            return choice;
         }
 
         /// <summary>
@@ -553,6 +661,51 @@ namespace ShipFleetManagementApp.UI
         }
 
         /// <summary>
+        /// Performs the process of updating the ship position.
+        /// </summary>
+        private static void UpdateShipPosition()
+        {
+            double latitude, longitude;
+            bool success = false;
+
+            Console.WriteLine("\nYou've chosen to update the position of the ship. Please provide the following information.");
+            Console.Write("Latitude: ");
+            latitude = ReadDoubleInput();
+            Console.Write("Longitude: ");
+            longitude = ReadDoubleInput();
+
+            while (!success)
+            {
+                try
+                {
+                    Console.WriteLine("\nUpdating the position...");
+                    _currentShip!.UpdatePosition(latitude, longitude);
+                    success = true;
+                    Console.WriteLine("The position has been updated successfully.");
+                }
+                catch (ArgumentException e)
+                {
+                    Console.WriteLine(e.Message);
+                    ShowPositionUpdateValuesChangeMenu();
+                    int input = ReadIntInput();
+                    Console.Write("New value: ");
+                    switch (input)
+                    {
+                        case 1:
+                            latitude = ReadDoubleInput();
+                            break;
+                        case 2:
+                            longitude = ReadDoubleInput();
+                            break;
+                        default:
+                            Console.WriteLine("Invalid number. Try again.");
+                            break;
+                    }
+                }
+            }
+        }
+
+        /// <summary>
         /// Show the menu for specifying the configuration of tanks on this ship.
         /// </summary>
         private static void ShowTanksAddingMenu()
@@ -567,7 +720,7 @@ namespace ShipFleetManagementApp.UI
         }
 
         /// <summary>
-        /// Shows the menu for choosing the value to be changed.
+        /// Shows the menu for choosing the value to be changed (during creating a ship).
         /// </summary>
         private static void ShowShipValuesChangeMenu()
         {
@@ -580,6 +733,17 @@ namespace ShipFleetManagementApp.UI
                 "5. Latitude\n" +
                 "6. Longitude\n" +
                 "7. Maximum load");
+        }
+
+        /// <summary>
+        /// Shows the menu for choosing the value to be changed (during updating the ship position).
+        /// </summary>
+        private static void ShowPositionUpdateValuesChangeMenu()
+        {
+            Console.WriteLine("Please choose the number of the value you'd like to change.");
+            Console.WriteLine(
+                "1. Latitude\n" +
+                "2. Longitude");
         }
 
         /// <summary>

@@ -74,6 +74,16 @@ namespace ShipFleetManagementApp.Backend
             }
         }
 
+        /// <summary>
+        /// Checks if the ship exists.
+        /// </summary>
+        /// <param name="index"></param>
+        /// <returns>true if the ship exists, false if not</returns>
+        public bool IsShipIndexValid(int index)
+        {
+            return index >= 0 && index < Ships.Count;
+        }
+
         public override string ToString()
         {
             return $"{Name}";

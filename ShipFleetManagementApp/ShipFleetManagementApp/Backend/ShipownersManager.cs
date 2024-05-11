@@ -38,7 +38,7 @@
         /// Checks if the shipowner exists.
         /// </summary>
         /// <param name="index"></param>
-        /// <returns></returns>
+        /// <returns>true if the shipowner exists, false if not</returns>
         public bool IsShipownerIndexValid(int index)
         {
             return index >= 0 && index < Shipowners.Count;
