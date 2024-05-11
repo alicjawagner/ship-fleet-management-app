@@ -1,5 +1,4 @@
 ﻿using ShipFleetManagementApp.Backend.Ships;
-using ShipFleetManagementApp.Backend.Ships.Cargo;
 
 namespace ShipFleetManagementApp.Backend
 {
@@ -50,10 +49,11 @@ namespace ShipFleetManagementApp.Backend
         /// <param name="longitude"></param>
         /// <param name="maxLoad"></param>
         /// <param name="tanks"></param>
-        public void AddTankerShip(string iMONumber, string name, double length, double width, double latitude, double longitude, double maxLoad)
+        public TankerShip AddTankerShip(string iMONumber, string name, double length, double width, double latitude, double longitude, double maxLoad)
         {
             TankerShip ship = new TankerShip(iMONumber, name, length, width, latitude, longitude, maxLoad);
             AddShip(ship);
+            return ship;
         }
 
         /// <summary>

@@ -1,6 +1,11 @@
 ﻿using ShipFleetManagementApp.Backend;
+using ShipFleetManagementApp.Backend.Ships;
+using ShipFleetManagementApp.Backend.Ships.Cargo;
 using ShipFleetManagementApp.Backend.Utils;
+using System.Data;
 using System.Globalization;
+using System.Numerics;
+using System.Xml.Linq;
 
 namespace ShipFleetManagementApp.UI
 {
@@ -89,7 +94,7 @@ namespace ShipFleetManagementApp.UI
         /// </summary>
         private static void ShowExitOption()
         {
-            Console.WriteLine("-1. Exit.\n");
+            Console.WriteLine("-1. Exit the program.\n");
         }
 
         /// <summary>
@@ -293,7 +298,7 @@ namespace ShipFleetManagementApp.UI
             int maxContainers;
             bool success = false;
 
-            Console.WriteLine("\nYou've chosen to add a new container ship. Please provide the information below.");
+            Console.WriteLine("\nYou've chosen to add a new container ship. Please provide the following information.");
             Console.Write("IMO Number (format: IMO 1234567): ");
             iMONumber = Console.ReadLine() ?? "unspecified";
             Console.Write("Name: ");
@@ -366,11 +371,12 @@ namespace ShipFleetManagementApp.UI
         /// </summary>
         private static void AddTankerShip()
         {
+            TankerShip? tankerShip = null;
             string iMONumber, name;
             double length, width, latitude, longitude, maxLoad;
             bool success = false;
 
-            Console.WriteLine("\nYou've chosen to add a new tanker ship. Please provide the information below.");
+            Console.WriteLine("\nYou've chosen to add a new tanker ship. Please provide the following information.");
             Console.Write("IMO Number (format: IMO 1234567): ");
             iMONumber = Console.ReadLine() ?? "unspecified";
             Console.Write("Name: ");
@@ -391,7 +397,7 @@ namespace ShipFleetManagementApp.UI
                 try
                 {
                     Console.WriteLine("\nAdding the ship...");
-                    _currentShipowner!.AddTankerShip(iMONumber, name, length, width, latitude, longitude, maxLoad);
+                    tankerShip = _currentShipowner!.AddTankerShip(iMONumber, name, length, width, latitude, longitude, maxLoad);
                     success = true;
                     Console.WriteLine("The ship has been added successfully.");
                 }
@@ -430,7 +436,134 @@ namespace ShipFleetManagementApp.UI
                     }
                 }
             }
-            //TODO add tanks
+            ConfigureTanks(tankerShip!);
+        }
+
+        /// <summary>
+        /// Performs the process of configuring the tanks on a tanker ship.
+        /// </summary>
+        /// <param name="tankerShip"></param>
+        private static void ConfigureTanks(TankerShip tankerShip)
+        {
+            ShowTanksAddingMenu();
+            int choice = ReadIntInput();
+            List<Tank> tanks = [];
+            bool stop = false;
+
+            while (!stop)
+            {
+                switch (choice)
+                {
+                    case 1: // add one tank
+                        tanks.Add(CreateOneTank());
+                        break;
+                    case 2: // add several tanks
+                        tanks.AddRange(CreateSeveralTanks());
+                        break;
+                    case 3: // finish adding tanks
+                        stop = true;
+                        Console.WriteLine("All tanks have been saved successfully.");
+                        break;
+                    default:
+                        Console.WriteLine("Invalid input. Please enter a valid option.");
+                        break;
+                }
+
+                if (choice != 3) // user doesn't finish, they stay in the menu
+                {
+                    ShowTanksAddingMenu();
+                    choice = ReadIntInput();
+                }
+            }
+            tankerShip.Tanks = tanks;
+        }
+
+        /// <summary>
+        /// Performs creating a new tank to be added to the tanker ship.
+        /// </summary>
+        /// <returns>Created tank object.</returns>
+        private static Tank CreateOneTank()
+        {
+            double maxCapacity;
+            Tank? tank = null;
+            bool success = false;
+
+            Console.WriteLine("You are adding one tank. Please provide the following information.");
+            Console.Write("Maximum capacity in liters: ");
+            maxCapacity = ReadDoubleInput();
+
+            while (!success)
+            {
+                try
+                {
+                    Console.WriteLine("\nAdding the tank...");
+                    tank = new Tank(maxCapacity);
+                    success = true;
+                    Console.WriteLine("The tank has been added successfully.");
+                }
+                catch (ArgumentException e)
+                {
+                    Console.WriteLine(e.Message);
+                    Console.Write("Enter the new value for maximum capacity: ");
+                    maxCapacity = ReadDoubleInput();
+                }
+            }
+
+            return tank!;
+        }
+
+        /// <summary>
+        /// Performs creating several tanks with the same parameters to be added to the tanker ship.
+        /// </summary>
+        /// <returns>The list of created tanks.</returns>
+        private static List<Tank> CreateSeveralTanks()
+        {
+            double maxCapacity;
+            int tanksNumber;
+            List<Tank> tanks = [];
+            bool success = false;
+
+            Console.WriteLine("You are adding several tanks with the same parameters. Please provide the following information.");
+            Console.Write("Maximum capacity in liters for a tank: ");
+            maxCapacity = ReadDoubleInput();
+            Console.Write("How many tanks do you want to add: ");
+            tanksNumber = ReadIntInput();
+
+            while (!success)
+            {
+                try
+                {
+                    Console.WriteLine("\nAdding the tanks...");
+                    for (int i = 0; i < tanksNumber; i++)
+                    {
+                        tanks.Add(new Tank(maxCapacity));
+                    }
+                    success = true;
+                    Console.WriteLine("The tanks have been added successfully.");
+                }
+                catch (ArgumentException e)
+                {
+                    Console.WriteLine(e.Message);
+                    Console.Write("Enter the new value for maximum capacity: ");
+                    maxCapacity = ReadDoubleInput();
+                }
+            }
+
+            return tanks;
+        }
+
+        /// <summary>
+        /// Show the menu for specifying the configuration of tanks on this ship.
+        /// </summary>
+        private static void ShowTanksAddingMenu()
+        {
+            Console.WriteLine("\nPlease specify the configuration of tanks for this ship.");
+            Console.WriteLine("You can add tanks one by one or add several tanks of the same type at once. Choose what would you like to do:");
+            Console.WriteLine(
+                "1. Add a tank.\n" +
+                "2. Add several tanks at once.\n" +
+                "3. Finish adding tanks.");
+            ShowExitOption();
         }
 
         /// <summary>
