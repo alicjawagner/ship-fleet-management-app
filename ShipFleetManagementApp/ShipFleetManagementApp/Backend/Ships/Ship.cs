@@ -54,7 +54,7 @@ namespace ShipFleetManagementApp.Backend.Ships
                 }
                 else
                 {
-                    throw new ArgumentException("IMO number is incorrect. It should start with capital letters 'IMO', followed by a space character, followed by 7 valid digits.");
+                    throw new ArgumentException($"IMO number {value} is incorrect. It should start with capital letters 'IMO', followed by a space character, followed by 7 valid digits.");
                 }
             }
         }
@@ -73,7 +73,7 @@ namespace ShipFleetManagementApp.Backend.Ships
                 }
                 else
                 {
-                    throw new ArgumentException("Length is incorrect. It should be a positive number.");
+                    throw new ArgumentException($"Length {value} is incorrect. It should be a positive number.");
                 }
             }
         }
@@ -92,7 +92,7 @@ namespace ShipFleetManagementApp.Backend.Ships
                 }
                 else
                 {
-                    throw new ArgumentException("Width is incorrect. It should be a positive number.");
+                    throw new ArgumentException($"Width {value} is incorrect. It should be a positive number.");
                 }
             }
         }
@@ -111,7 +111,7 @@ namespace ShipFleetManagementApp.Backend.Ships
                 }
                 else
                 {
-                    throw new ArgumentException("MaxLoad is incorrect. It should be a non-negative number.");
+                    throw new ArgumentException($"MaxLoad {value} is incorrect. It should be a non-negative number.");
                 }
             }
         }
@@ -130,7 +130,7 @@ namespace ShipFleetManagementApp.Backend.Ships
                 }
                 else
                 {
-                    throw new ArgumentException("CurrentLoad is incorrect. It should be less or equal to MaxLoad and a non-negative number.");
+                    throw new ArgumentException($"CurrentLoad {value} is incorrect. It should be less or equal to MaxLoad and a non-negative number.");
                 }
             }
         }

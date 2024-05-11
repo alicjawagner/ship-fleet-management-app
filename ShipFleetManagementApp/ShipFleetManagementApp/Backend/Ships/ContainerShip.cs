@@ -15,7 +15,7 @@ namespace ShipFleetManagementApp.Backend.Ships
             }
             else
             {
-                throw new ArgumentException("MaxContainers is incorrect. It should be a non-negative number.");
+                throw new ArgumentException($"MaxContainers {maxContainers} is incorrect. It should be a non-negative number.");
             }
         }
 
@@ -43,7 +43,7 @@ namespace ShipFleetManagementApp.Backend.Ships
                 }
                 else
                 {
-                    throw new ArgumentException("CurrentContainers is incorrect. It should be less or equal to MaxContainers and a non-negative number.");
+                    throw new ArgumentException($"CurrentContainers {value} is incorrect. It should be less or equal to MaxContainers and a non-negative number.");
                 }
             }
         }

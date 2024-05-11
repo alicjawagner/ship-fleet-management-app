@@ -40,7 +40,7 @@
                 }
                 else
                 {
-                    throw new ArgumentException("MaxCapacity is incorrect. It should be a non-negative number.");
+                    throw new ArgumentException($"MaxCapacity {value} is incorrect. It should be a non-negative number.");
                 }
             }
         }
@@ -59,7 +59,7 @@
                 }
                 else
                 {
-                    throw new ArgumentException("CurrentVolume is incorrect. It should be less or equal to MaxLoad and a non-negative number.");
+                    throw new ArgumentException($"CurrentVolume {value} is incorrect. It should be less or equal to MaxCapacity and a non-negative number.");
                 }
             }
         }

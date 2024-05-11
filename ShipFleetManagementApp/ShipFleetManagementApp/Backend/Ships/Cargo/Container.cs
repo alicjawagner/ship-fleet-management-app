@@ -13,7 +13,7 @@
             }
             else
             {
-                throw new ArgumentException("Container weight is incorrect. It should be a non-negative number.");
+                throw new ArgumentException($"Container's weight {weight} is incorrect. It should be a non-negative number.");
             }
         }
 

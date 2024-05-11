@@ -13,7 +13,10 @@ namespace ShipFleetManagementApp.UI
         private static Ship? _currentShip = null;
         private static ContainerShip? _currentContainerShip = null;
         private static TankerShip? _currentTankerShip = null;
-        private static bool _isContainerShip = false; // true - container, false - tanker
+        /// <summary>
+        /// true - it is a container ship, false - it is a tanker ship
+        /// </summary>
+        private static bool _isContainerShip = false;
         private static Tank? _currentTank = null;
         
         /// <summary>
@@ -60,6 +63,7 @@ namespace ShipFleetManagementApp.UI
 
             while (!success)
             {
+                input = input.Replace(",", ".");
                 if (double.TryParse(input, NumberStyles.Any, CultureInfo.InvariantCulture, out double result))
                 {
                     choice = result;

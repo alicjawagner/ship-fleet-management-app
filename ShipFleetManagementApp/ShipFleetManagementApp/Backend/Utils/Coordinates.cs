@@ -10,7 +10,7 @@
             }
             else
             {
-                throw new ArgumentException("Latitude is incorrect. It should be in range [-90, 90].");
+                throw new ArgumentException($"Latitude {latitude} is incorrect. It should be in range [-90, 90].");
             }
 
             if (longitude >= -180.0 && longitude < 180.0)
@@ -19,7 +19,7 @@
             }
             else
             {
-                throw new ArgumentException("Longitude is incorrect. It should be in range [-180, 180).");
+                throw new ArgumentException($"Longitude {longitude} is incorrect. It should be in range [-180, 180).");
             }
         }
 
