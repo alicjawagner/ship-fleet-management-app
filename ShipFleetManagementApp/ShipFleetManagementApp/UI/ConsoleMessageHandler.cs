@@ -2,11 +2,7 @@
 using ShipFleetManagementApp.Backend.Ships;
 using ShipFleetManagementApp.Backend.Ships.Cargo;
 using ShipFleetManagementApp.Backend.Utils;
-using System.Data;
 using System.Globalization;
-using System.Numerics;
-using System.Threading.Tasks;
-using System.Xml.Linq;
 
 namespace ShipFleetManagementApp.UI
 {
@@ -15,6 +11,8 @@ namespace ShipFleetManagementApp.UI
         private static readonly ShipownersManager _shipownersManager = new ShipownersManager();
         private static Shipowner? _currentShipowner = null;
         private static Ship? _currentShip = null;
+        private static ContainerShip? _currentContainerShip = null;
+        private static TankerShip? _currentTankerShip = null;
         private static bool _isContainerShip = false; // true - container, false - tanker
         
         /// <summary>
@@ -121,6 +119,8 @@ namespace ShipFleetManagementApp.UI
         private static void ShowShipownersMenu()
         {
             _currentShip = null;
+            _currentContainerShip = null;
+            _currentTankerShip = null;
             _isContainerShip = false;
 
             ShowMenuHeading();
@@ -157,9 +157,8 @@ namespace ShipFleetManagementApp.UI
             else
             {
                 Console.WriteLine(
-                    "3. Refuel a tank.\n" +
-                    "4. Empty a tank.\n" +
-                    "5. Show tanks installed on this ship.");
+                    "3. Choose a tank.\n" +
+                    "4. Show tanks installed on this ship.");
             }
             ShowExitOption();
         }
@@ -237,7 +236,6 @@ namespace ShipFleetManagementApp.UI
 
         private static void ReactToShipsMenuChoice(int input)
         {
-            // TODO finish switch
             bool stop = false;
 
             while (!stop)
@@ -247,21 +245,36 @@ namespace ShipFleetManagementApp.UI
                     case 0: //go back
                         stop = true;
                         break;
+
                     case 1: // position update
                         UpdateShipPosition();
                         break;
+
                     case 2: // show position history
-                        
+                        _currentShip!.PrintPositionHistory();
                         break;
-                    case 3: // load container / refuel tank
-                        
-                        break;
-                    case 4: // unload container / empty tank
 
+                    case 3: // load container / choose tank
+                        if (_isContainerShip)
+                            LoadContainer();
+                        else
+                            ChooseTank();
                         break;
-                    case 5: // show containers / show tanks
 
+                    case 4: // unload container / show tanks
+                        if (_isContainerShip)
+                            UnloadContainer();
+                        else
+                            _currentTankerShip!.PrintTanks();
                         break;
+
+                    case 5: // show containers / invalid input
+                        if (_isContainerShip)
+                            _currentContainerShip!.PrintContainers();
+                        else
+                            Console.WriteLine("Invalid input. Please enter a valid option.");
+                        break;
+
                     default:
                         Console.WriteLine("Invalid input. Please enter a valid option.");
                         break;
@@ -299,7 +312,16 @@ namespace ShipFleetManagementApp.UI
             }
 
             _currentShip = _currentShipowner.Ships[choice];
-            _isContainerShip = _currentShip is ContainerShip;
+            if (_currentShip is ContainerShip)
+            {
+                _isContainerShip = true;
+                _currentContainerShip = (ContainerShip)_currentShip;
+            }
+            else
+            {
+                _isContainerShip = false;
+                _currentTankerShip = (TankerShip)_currentShip;
+            }
             return choice;
         }
 
@@ -430,8 +452,8 @@ namespace ShipFleetManagementApp.UI
                 {
                     Console.WriteLine("\nAdding the ship...");
                     _currentShipowner!.AddContainerShip(iMONumber, name, length, width, latitude, longitude, maxLoad, maxContainers);
-                    success = true;
                     Console.WriteLine("The ship has been added successfully.");
+                    success = true;
                 }
                 catch (ArgumentException e)
                 {
@@ -506,8 +528,8 @@ namespace ShipFleetManagementApp.UI
                 {
                     Console.WriteLine("\nAdding the ship...");
                     tankerShip = _currentShipowner!.AddTankerShip(iMONumber, name, length, width, latitude, longitude, maxLoad);
-                    success = true;
                     Console.WriteLine("The ship has been added successfully.");
+                    success = true;
                 }
                 catch (ArgumentException e)
                 {
@@ -606,8 +628,8 @@ namespace ShipFleetManagementApp.UI
                 {
                     Console.WriteLine("\nAdding the tank...");
                     tank = new Tank(maxCapacity);
-                    success = true;
                     Console.WriteLine("The tank has been added successfully.");
+                    success = true;
                 }
                 catch (ArgumentException e)
                 {
@@ -646,8 +668,8 @@ namespace ShipFleetManagementApp.UI
                     {
                         tanks.Add(new Tank(maxCapacity));
                     }
-                    success = true;
                     Console.WriteLine("The tanks have been added successfully.");
+                    success = true;
                 }
                 catch (ArgumentException e)
                 {
@@ -680,8 +702,8 @@ namespace ShipFleetManagementApp.UI
                 {
                     Console.WriteLine("\nUpdating the position...");
                     _currentShip!.UpdatePosition(latitude, longitude);
-                    success = true;
                     Console.WriteLine("The position has been updated successfully.");
+                    success = true;
                 }
                 catch (ArgumentException e)
                 {
@@ -703,6 +725,76 @@ namespace ShipFleetManagementApp.UI
                     }
                 }
             }
+        }
+
+        /// <summary>
+        /// Performs the process of loading a container onto the ship.
+        /// </summary>
+        private static void LoadContainer()
+        {
+            string sender, addressee, cargoDescription;
+            double weight;
+            bool success = false;
+
+            Console.WriteLine("You are loading a container. Please provide the following information.");
+            Console.Write("Sender: ");
+            sender = Console.ReadLine() ?? "unspecified";
+            Console.Write("Addressee: ");
+            addressee = Console.ReadLine() ?? "unspecified";
+            Console.Write("Cargo description: ");
+            cargoDescription = Console.ReadLine() ?? "unspecified";
+            Console.Write("Weight in tons: ");
+            weight = ReadDoubleInput();
+
+            while (!success)
+            {
+                try
+                {
+                    Console.WriteLine("\nLoading the container...");
+                    _currentContainerShip!.LoadContainer(sender, addressee, cargoDescription, weight);
+                    Console.WriteLine("The container has been loaded successfully.");
+                    success = true;
+                }
+                catch (ArgumentException e)
+                {
+                    Console.WriteLine(e.Message);
+                    Console.Write("Enter the new value for weight: ");
+                    weight = ReadDoubleInput();
+                }
+                catch (InvalidOperationException e)
+                {
+                    Console.WriteLine(e.Message);
+                    Console.WriteLine("Loading the container unsuccessful.");
+                    success = true;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Performs the process of unloading a container.
+        /// </summary>
+        private static void UnloadContainer()
+        {
+            Console.WriteLine("You are unloading a container. Please select the container you'd like to unload. Enter the container's number and press enter.");
+            _currentContainerShip!.PrintContainers();
+            int input = ReadIntInput();
+            Console.WriteLine("Unloading the conatiner...");
+
+            try
+            {
+                _currentContainerShip!.UnloadContainer(input);
+                Console.WriteLine("The container has been unloaded successfully.");
+            }
+            catch (InvalidOperationException e)
+            {
+                Console.WriteLine(e.Message);
+                Console.WriteLine("Unloading the container unsuccessful.");
+            }
+        }
+
+        private static void ChooseTank()
+        {
+            // TODO
         }
 
         /// <summary>

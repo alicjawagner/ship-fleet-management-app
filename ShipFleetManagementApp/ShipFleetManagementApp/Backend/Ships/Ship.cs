@@ -197,6 +197,7 @@ namespace ShipFleetManagementApp.Backend.Ships
         /// </summary>
         public void PrintPositionHistory()
         {
+            Console.WriteLine($"The position history of {IMONumber} {Name}:");
             foreach (LocationTimestamp timestamp in PositionHistory)
             {
                 Console.WriteLine(timestamp.ToString());

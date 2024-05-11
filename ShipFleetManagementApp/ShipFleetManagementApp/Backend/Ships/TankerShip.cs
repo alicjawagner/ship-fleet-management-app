@@ -43,6 +43,7 @@ namespace ShipFleetManagementApp.Backend.Ships
                 return;
             }
 
+            Console.WriteLine($"Tanks installed on {IMONumber} {Name}:");
             for (int i = 0; i < Tanks.Count; i++)
             {
                 Console.WriteLine($"Tank {i}: {Tanks[i]}");

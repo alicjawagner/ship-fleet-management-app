@@ -111,6 +111,7 @@ namespace ShipFleetManagementApp.Backend.Ships
                 return;
             }
 
+            Console.WriteLine($"Containers loaded onto {IMONumber} {Name}:");
             for (int i = 0; i < Containers.Count; i++)
             {
                 Console.WriteLine($"Container {i}: {Containers[i]}");
