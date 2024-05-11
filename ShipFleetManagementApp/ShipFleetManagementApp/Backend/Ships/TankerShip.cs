@@ -4,7 +4,7 @@ namespace ShipFleetManagementApp.Backend.Ships
 {
     public class TankerShip : Ship
     {
-        private Tank[]? _tanks = null;
+        private List<Tank>? _tanks = null;
 
         public TankerShip(string iMONumber, string name, double length, double width, double latitude, double longitude, double maxLoad)
             : base(iMONumber, name, length, width, latitude, longitude, maxLoad)
@@ -14,7 +14,7 @@ namespace ShipFleetManagementApp.Backend.Ships
         /// <summary>
         /// The list of the tanks installed on the ship.
         /// </summary>
-        public Tank[] Tanks {
+        public List<Tank> Tanks {
             get
             {
                 return _tanks ?? [];
@@ -37,13 +37,13 @@ namespace ShipFleetManagementApp.Backend.Ships
         /// </summary>
         public void PrintTanks()
         {
-            if (Tanks.Length == 0)
+            if (Tanks.Count == 0)
             {
                 Console.WriteLine("There are no tanks installed on this ship.");
                 return;
             }
 
-            for (int i = 0; i < Tanks.Length; i++)
+            for (int i = 0; i < Tanks.Count; i++)
             {
                 Console.WriteLine($"Tank {i}: {Tanks[i]}");
             }
