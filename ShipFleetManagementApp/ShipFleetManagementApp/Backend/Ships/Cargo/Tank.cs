@@ -106,6 +106,10 @@
             {
                 throw new InvalidOperationException("Emptying tank unsuccessful. The tank is not installed on any ship.");
             }
+            if (CurrentVolume == 0)
+            {
+                throw new InvalidOperationException("Emptying tank unsuccessful. This tank is empty and cannot be emptied.");
+            }
 
             Ship.CurrentLoad -= _currentWeight;
             FuelType = null;
@@ -116,7 +120,7 @@
         public override string ToString()
         {
             string state = (CurrentVolume != 0) ? $"refueled ({FuelType!.Type} - {CurrentVolume} liters)" : "empty";
-            return $"Max capacity: {MaxCapacity} liters, state: {state}";
+            return $"Max capacity: {MaxCapacity} liters, State: {state}";
         }
 
         /// <summary>

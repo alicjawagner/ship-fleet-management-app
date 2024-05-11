@@ -863,8 +863,14 @@ namespace ShipFleetManagementApp.UI
         /// <returns>The index of the chosen tank or -1 if no tank chosen.</returns>
         private static int ChooseTank()
         {
+            if (_currentTankerShip!.Tanks.Count == 0)
+            {
+                Console.WriteLine("There are no tanks installed on this ship.");
+                return -1;
+            }
+
             Console.WriteLine("\nChoosing a tank.\nEnter the tank's number:");
-            _currentTankerShip!.PrintTanks();
+            _currentTankerShip.PrintTanks();
             int choice = ReadIntInput();
 
             if (!_currentTankerShip.IsTankIndexValid(choice))
